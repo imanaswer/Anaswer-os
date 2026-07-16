@@ -30,7 +30,10 @@ export default function ProjectsApp() {
             }`}
           >
             <div className="mb-1 flex items-center justify-between gap-2">
-              <span className="font-pixel text-[11px] text-ink">{p.name}</span>
+              <span className="font-pixel text-[11px] text-ink">
+                <span className="mr-1.5">{p.icon}</span>
+                {p.name}
+              </span>
               <span className="font-mono text-[10px] text-inkSoft">{p.year}</span>
             </div>
             <p className="font-body text-[12.5px] leading-snug text-inkSoft">{p.blurb}</p>
@@ -55,6 +58,17 @@ export default function ProjectsApp() {
             >
               ← back
             </button>
+            <div
+              className="mb-4 flex items-center justify-center rounded-lg border-2 border-ink/15 py-7"
+              style={{
+                backgroundColor: `${selected.accent}2E`,
+                backgroundImage: `repeating-linear-gradient(0deg, ${selected.accent}26 0 2px, transparent 2px 10px), repeating-linear-gradient(90deg, ${selected.accent}26 0 2px, transparent 2px 10px)`,
+              }}
+            >
+              <span className="text-5xl drop-shadow-[3px_3px_0_rgba(42,39,33,0.25)]">
+                {selected.icon}
+              </span>
+            </div>
             <div className="mb-2 flex flex-wrap items-center gap-2">
               <h2 className="font-pixel text-sm text-ink">{selected.name}</h2>
               <span className={`rounded-full border px-2 py-0.5 font-mono text-[10px] ${statusStyle[selected.status]}`}>
@@ -64,6 +78,22 @@ export default function ProjectsApp() {
             <p className="mb-4 font-body text-[14px] leading-relaxed text-inkSoft">
               {selected.description}
             </p>
+            {selected.metrics && (
+              <div className="mb-4 grid grid-cols-3 gap-2">
+                {selected.metrics.map((m) => (
+                  <div
+                    key={m.label}
+                    className="rounded-lg border-2 border-ink/15 bg-cream p-2 text-center"
+                    style={{ borderBottomColor: selected.accent, borderBottomWidth: 3 }}
+                  >
+                    <div className="font-pixel text-[11px] leading-tight text-ink">{m.value}</div>
+                    <div className="mt-1 font-mono text-[9px] uppercase leading-tight text-inkSoft">
+                      {m.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
             {selected.architecture && (
               <div className="mb-4">
                 <p className="mb-1.5 font-pixel text-[9px] text-inkSoft">architecture.txt</p>

@@ -40,6 +40,12 @@ export type Project = {
   name: string;
   blurb: string;
   description: string;
+  // Emoji shown in the list and detail banner
+  icon: string;
+  // Theme hex used to tint the banner + stat tiles
+  accent: string;
+  // Headline numbers shown as stat tiles
+  metrics?: { value: string; label: string }[];
   // Workflow / engineering highlights shown as bullets
   highlights?: string[];
   // ASCII architecture diagram, rendered in a mono <pre>
@@ -76,6 +82,13 @@ export const projects: Project[] = [
          │ yes
          ▼
    reply to customer ──▶ log to CRM`,
+    icon: "🤖",
+    accent: "#E8A33D",
+    metrics: [
+      { value: "70%", label: "auto-resolved" },
+      { value: "<8s", label: "median reply" },
+      { value: "100%", label: "logged to CRM" },
+    ],
     stack: ["Python", "FastAPI", "Agents", "RAG", "Tool Calling"],
     year: "2026",
     status: "shipped",
@@ -102,6 +115,13 @@ export const projects: Project[] = [
                    (durable state)    backoff ×N, then
                                           ▼
                                     dead-letter queue`,
+    icon: "⚡",
+    accent: "#02656A",
+    metrics: [
+      { value: "2M+/day", label: "events" },
+      { value: "0", label: "lost events" },
+      { value: "45ms", label: "p99 ingest" },
+    ],
     stack: ["Kafka", "Redis", "PostgreSQL", "Distributed Systems"],
     year: "2026",
     status: "shipped",
@@ -126,6 +146,13 @@ question ──▶ embed ──▶ top-k ──▶ rerank ──┘
                      LLM: answer · code · citations
                                    │
               eval harness ◀── golden Q&A set`,
+    icon: "📚",
+    accent: "#9DBFA9",
+    metrics: [
+      { value: "10K+", label: "chunks indexed" },
+      { value: "92%", label: "hit@5 retrieval" },
+      { value: "+31%", label: "accuracy w/ rerank" },
+    ],
     stack: ["Python", "Vector DB", "Embeddings", "Reranking", "Evals"],
     year: "2026",
     status: "shipped",
@@ -153,6 +180,13 @@ question ──▶ embed ──▶ top-k ──▶ rerank ──┘
       Gmail      Slack      OpenAI    Postgres
                               ▲
         scheduler: cron · webhooks ──┘`,
+    icon: "🧩",
+    accent: "#E5928E",
+    metrics: [
+      { value: "DAG", label: "execution model" },
+      { value: "per-node", label: "retries" },
+      { value: "cron+hooks", label: "triggers" },
+    ],
     stack: ["Python", "FastAPI", "React", "PostgreSQL", "Orchestration"],
     year: "2026",
     status: "in-progress",
@@ -180,6 +214,13 @@ question ──▶ embed ──▶ top-k ──▶ rerank ──┘
                                       ▼
                      confidence filter ──▶ inline comments
                                            + PR summary`,
+    icon: "🔍",
+    accent: "#E8A33D",
+    metrics: [
+      { value: "<3min", label: "pr turnaround" },
+      { value: "2", label: "review passes" },
+      { value: "~80%", label: "useful comments" },
+    ],
     stack: ["Python", "GitHub API", "LLMs", "Static Analysis"],
     year: "2026",
     status: "shipped",
@@ -207,6 +248,13 @@ question ──▶ embed ──▶ top-k ──▶ rerank ──┘
                         │
                         ▼
               final report with citations`,
+    icon: "🧠",
+    accent: "#02656A",
+    metrics: [
+      { value: "3", label: "agent roles" },
+      { value: "10×", label: "parallel workers" },
+      { value: "100%", label: "claims cited" },
+    ],
     stack: ["Python", "Multi-Agent", "LLMs", "Web Search"],
     year: "2026",
     status: "shipped",
@@ -232,6 +280,13 @@ question ──▶ embed ──▶ top-k ──▶ rerank ──┘
                           │          dashboards
                           ▼
                    Alertmanager ──▶ Slack pages`,
+    icon: "📈",
+    accent: "#9DBFA9",
+    metrics: [
+      { value: "15s", label: "scrape interval" },
+      { value: "8+", label: "alert rules" },
+      { value: "1", label: "page per incident" },
+    ],
     stack: ["Prometheus", "OpenTelemetry", "Grafana", "Docker"],
     year: "2026",
     status: "shipped",
@@ -258,6 +313,13 @@ question ──▶ embed ──▶ top-k ──▶ rerank ──┘
              ▼
         pricing ──▶ dispatch event ──▶ event log
                                       (replayable)`,
+    icon: "🚕",
+    accent: "#E5928E",
+    metrics: [
+      { value: "-23%", label: "wait vs greedy" },
+      { value: "O(cell)", label: "driver lookup" },
+      { value: "100%", label: "replayable" },
+    ],
     stack: ["Go", "Geospatial Indexing", "Event Sourcing"],
     year: "2026",
     status: "shipped",
@@ -283,6 +345,13 @@ question ──▶ embed ──▶ top-k ──▶ rerank ──┘
                      │
              metadata service
        file → chunks → locations · versions`,
+    icon: "💾",
+    accent: "#E8A33D",
+    metrics: [
+      { value: "3×", label: "replication" },
+      { value: "4MB", label: "chunk size" },
+      { value: "0", label: "bytes lost on failure" },
+    ],
     stack: ["Go", "Distributed Systems", "Consistent Hashing"],
     year: "2025",
     status: "shipped",
@@ -310,6 +379,13 @@ question ──▶ embed ──▶ top-k ──▶ rerank ──┘
                     apply ──▶ EC2 · S3 · IAM
                        │
                   state file (idempotent re-runs)`,
+    icon: "🏗️",
+    accent: "#02656A",
+    metrics: [
+      { value: "no-op", label: "second apply" },
+      { value: "3", label: "aws services" },
+      { value: "1 cmd", label: "plan → apply" },
+    ],
     stack: ["Python", "AWS", "boto3", "CLI"],
     year: "2025",
     status: "shipped",
@@ -332,6 +408,13 @@ query ──▶ graph traversal + vector search
                      ▼
        LLM: bug localization · PR analysis
             · architecture explanations`,
+    icon: "🕸️",
+    accent: "#9DBFA9",
+    metrics: [
+      { value: "100K+", label: "loc reasoned over" },
+      { value: "2-way", label: "graph + vector" },
+      { value: "AST", label: "graph precision" },
+    ],
     stack: ["Python", "Neo4j", "LLMs", "Vector Search"],
     year: "2026",
     status: "in-progress",
@@ -355,6 +438,13 @@ query ──▶ graph traversal + vector search
                         ▼
                  consumer groups
            offset commits · rebalancing`,
+    icon: "📨",
+    accent: "#E5928E",
+    metrics: [
+      { value: "ISR", label: "replication" },
+      { value: "auto", label: "partition failover" },
+      { value: "0 deps", label: "pure go" },
+    ],
     stack: ["Go"],
     year: "2025",
     status: "shipped",
