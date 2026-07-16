@@ -12,7 +12,7 @@ export const profile = {
     "I take products from zero to production — the backend, the infra, and the AI plumbing in between.",
   about: [
     "Hey, I'm Anaswer Ajay — a backend engineer from Kerala who likes building things that have to actually work: marketplaces, search systems, distributed anything.",
-    "I interned on Google's Search Ranking team, then did the scary thing — left to become the founding engineer at GameGround, a sports marketplace for athletes and coaches back home. I built the backend from the first commit (FastAPI, PostgreSQL, AWS) and it now serves 500+ active users. Biggest gamble of my life; zero regrets.",
+    "I interned on Google's Search Ranking team, spent an autumn writing Python and C++ at Jane Street in London, then did the scary thing — became the founding engineer at GameGround, a sports marketplace for athletes and coaches back home. I built the backend from the first commit (FastAPI, PostgreSQL, AWS) and it now serves 500+ active users. Biggest gamble of my life; zero regrets.",
     "I build things wherever I go. A bakery in Croatia kept selling out of burek, so I made them a live-menu site on the spot. I've trained an RL agent to land a lunar module, compared fraud-detection models for fun, and written about all of it for the 2,600+ people who follow along on LinkedIn.",
     "Off the clock: rebuilding Kafka in Go, the occasional jam session, and lofi on loop the whole time.",
   ],
@@ -49,6 +49,36 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    id: "support-agent",
+    name: "AI Customer Support Agent",
+    blurb: "Not a ChatGPT wrapper. An agent that actually closes tickets.",
+    description:
+      "A production-grade support agent that plugs into Gmail, Slack, Notion and a knowledge base, answers customer questions with RAG over real company docs, and — the important part — knows when it doesn't know: uncertain answers escalate to a human instead of hallucinating. Every conversation, tool call and escalation is logged straight into the CRM, so nothing falls through the cracks.",
+    stack: ["Python", "FastAPI", "Agents", "RAG", "Tool Calling"],
+    year: "2026",
+    status: "shipped",
+  },
+  {
+    id: "event-platform",
+    name: "Stripe-style Event Processing Platform",
+    blurb: "Millions of webhooks walk in. Every single one gets processed. Exactly once.",
+    description:
+      "A backend built for the unglamorous reality of webhooks at scale: millions of events flowing through Kafka, idempotency keys so retries never double-charge anyone, exponential-backoff retry queues, and dead-letter queues for the events that refuse to behave. Redis for hot-path dedup, PostgreSQL for durable state. The kind of plumbing you only notice when it breaks — so it doesn't.",
+    stack: ["Kafka", "Redis", "PostgreSQL", "Distributed Systems"],
+    year: "2026",
+    status: "shipped",
+  },
+  {
+    id: "docs-copilot",
+    name: "Copilot for Internal Docs",
+    blurb: "Upload your PDFs. Interrogate them. Get code back.",
+    description:
+      "GitHub Copilot, but for the docs nobody reads: drop in PDFs and internal wikis, then ask questions, search the architecture, get APIs explained, and generate working code snippets from the answers. Under the hood it's a full retrieval pipeline — vector database, embeddings, a reranking stage to keep the good chunks on top, and an evaluation harness so 'it feels smarter' is backed by actual numbers.",
+    stack: ["Python", "Vector DB", "Embeddings", "Reranking", "Evals"],
+    year: "2026",
+    status: "shipped",
+  },
+  {
     id: "ai-coding-agent",
     name: "AI Coding Agent",
     blurb: "An agent that reads your whole codebase — not just the file you're in.",
@@ -65,16 +95,6 @@ export const projects: Project[] = [
     description:
       "A distributed event-streaming platform written in Go: partitioned logs, replication, and persistent message storage, plus the genuinely hard parts — consumer-group coordination, offset management, leader-based replication, and partition recovery when nodes fall over.",
     stack: ["Go"],
-    year: "2025",
-    status: "shipped",
-  },
-  {
-    id: "semantic-search",
-    name: "Enterprise Semantic Search",
-    blurb: "Ask your documents a question, get an actual answer back.",
-    description:
-      "A semantic retrieval platform built on embeddings, vector search and RAG for enterprise knowledge discovery. Scalable ingestion and indexing pipelines, with embedding caching and async processing keeping retrieval quick even as the document pile grows.",
-    stack: ["Python", "FastAPI", "RAG"],
     year: "2025",
     status: "shipped",
   },
@@ -134,7 +154,7 @@ export const experience: Experience[] = [
     id: "gameground",
     company: "GameGround",
     role: "Founding Engineer",
-    period: "Sep 2025 — Present",
+    period: "Mar 2026 — Present",
     points: [
       "Building the backend of a sports marketplace from the very first commit — it now supports 500+ active users and 19+ onboarded coaches.",
       "Designed the FastAPI + PostgreSQL APIs behind bookings, coach discovery and onboarding, and own the architecture, data modeling and indexing decisions.",
@@ -144,10 +164,22 @@ export const experience: Experience[] = [
     stack: ["FastAPI", "PostgreSQL", "AWS"],
   },
   {
+    id: "janestreet",
+    company: "Jane Street",
+    role: "Software Engineering Intern",
+    period: "Sep 2025 — Dec 2025",
+    points: [
+      "Spent an autumn in London building and optimizing software in Python and C++, where 'fast enough' is never actually fast enough.",
+      "Collaborated with engineers on scalable systems and shipped improvements through a culture of relentless testing and code review.",
+      "Learned what production rigor looks like when the cost of a bug is measured in real money, in real time.",
+    ],
+    stack: ["Python", "C++"],
+  },
+  {
     id: "google",
     company: "Google",
     role: "Software Engineering Intern — Search Ranking",
-    period: "Feb 2025 — Jul 2025",
+    period: "Jan 2025 — Aug 2025",
     points: [
       "Built feature-engineering workflows for search ranking experiments, working from real user-behavior and interaction signals.",
       "Wrote internal tooling that automated dataset prep, validation and ranking evaluation for the engineering teams around me.",
@@ -166,6 +198,16 @@ export const experience: Experience[] = [
       "Turned vague stakeholder requests into concrete automation running across multiple business functions.",
     ],
     stack: ["Python", "ETL", "APIs"],
+  },
+  {
+    id: "code69",
+    company: "Code 69",
+    role: "Project Manager",
+    period: "Mar 2024 — Jul 2024",
+    points: [
+      "Led product planning and feature delivery — gathering requirements, prioritizing roadmaps, and herding cross-functional teams from idea to launch.",
+      "First taste of shipping software where the hard part wasn't the code — it was the people, the scope, and the deadline.",
+    ],
   },
 ];
 
@@ -203,5 +245,7 @@ export const funFacts = [
   "A bakery in Croatia kept selling out of burek, so I built them a live-menu site.",
   "I trained an RL agent to land a lunar module. It crashed ~400 times first.",
   "Left Google for a startup gamble — biggest one of my life, zero regrets.",
+  "One autumn at Jane Street taught me that 'fast enough' is never actually fast enough.",
+  "I built a webhook platform that handles millions of events, so I never have to think about a lost webhook again.",
   "Debugging soundtrack: lofi, always. There's an app for it on this desktop.",
 ];
