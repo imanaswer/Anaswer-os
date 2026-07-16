@@ -64,6 +64,24 @@ export default function ProjectsApp() {
             <p className="mb-4 font-body text-[14px] leading-relaxed text-inkSoft">
               {selected.description}
             </p>
+            {selected.architecture && (
+              <div className="mb-4">
+                <p className="mb-1.5 font-pixel text-[9px] text-inkSoft">architecture.txt</p>
+                <pre className="win-scroll overflow-x-auto rounded-lg border-2 border-ink/15 bg-creamDim p-3 font-mono text-[10.5px] leading-[1.45] text-ink">
+                  {selected.architecture}
+                </pre>
+              </div>
+            )}
+            {selected.highlights && (
+              <ul className="mb-4 space-y-1.5">
+                {selected.highlights.map((h) => (
+                  <li key={h} className="flex gap-2 font-body text-[13px] leading-snug text-inkSoft">
+                    <span className="text-amber">▸</span>
+                    <span>{h}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
             <div className="mb-5 flex flex-wrap gap-1.5">
               {selected.stack.map((s) => (
                 <span key={s} className="rounded-md border border-ink/20 bg-creamDim px-2 py-0.5 font-mono text-[11px] text-ink">

@@ -40,6 +40,10 @@ export type Project = {
   name: string;
   blurb: string;
   description: string;
+  // Workflow / engineering highlights shown as bullets
+  highlights?: string[];
+  // ASCII architecture diagram, rendered in a mono <pre>
+  architecture?: string;
   stack: string[];
   link?: string;
   repo?: string;
@@ -54,6 +58,24 @@ export const projects: Project[] = [
     blurb: "Not a ChatGPT wrapper. An agent that actually closes tickets.",
     description:
       "A production-grade support agent that plugs into Gmail, Slack, Notion and a knowledge base, answers customer questions with RAG over real company docs, and — the important part — knows when it doesn't know: uncertain answers escalate to a human instead of hallucinating. Every conversation, tool call and escalation is logged straight into the CRM, so nothing falls through the cracks.",
+    highlights: [
+      "Agent loop with tool calling: KB search, Notion lookup, Slack replies, CRM writes — each tool call logged and replayable.",
+      "Confidence gating: answers below threshold route to a human escalation queue instead of guessing.",
+      "RAG over real company docs with chunking + embeddings, so answers cite sources instead of vibes.",
+      "FastAPI service with async workers — inbox events stream in, nothing blocks on the LLM.",
+    ],
+    architecture: `Gmail / Slack / Web widget
+        │ inbound message
+        ▼
+┌──────────────────┐    ┌───────────────────┐
+│  Agent (LLM)     │◀──▶│ RAG: KB + Notion  │
+│  plan → tools    │    │ embed · retrieve  │
+└────────┬─────────┘    └───────────────────┘
+         │
+   confident? ──no──▶ human escalation queue
+         │ yes
+         ▼
+   reply to customer ──▶ log to CRM`,
     stack: ["Python", "FastAPI", "Agents", "RAG", "Tool Calling"],
     year: "2026",
     status: "shipped",
@@ -64,6 +86,22 @@ export const projects: Project[] = [
     blurb: "Millions of webhooks walk in. Every single one gets processed. Exactly once.",
     description:
       "A backend built for the unglamorous reality of webhooks at scale: millions of events flowing through Kafka, idempotency keys so retries never double-charge anyone, exponential-backoff retry queues, and dead-letter queues for the events that refuse to behave. Redis for hot-path dedup, PostgreSQL for durable state. The kind of plumbing you only notice when it breaks — so it doesn't.",
+    highlights: [
+      "Idempotency keys checked in Redis on the hot path — duplicate deliveries are dropped before they touch business logic.",
+      "Exponential-backoff retry topics; events that fail N times land in a dead-letter queue with full failure context.",
+      "Consumers are horizontally scalable Kafka groups; PostgreSQL holds durable event state and audit history.",
+      "Load-tested at millions of events/day with zero lost or double-processed events.",
+    ],
+    architecture: `producers ──▶ ingest API ──▶ Kafka topics
+                 │                  │
+          idempotency check     consumer groups
+           (Redis SETNX)            │
+                          ┌─────────┴─────────┐
+                          ▼                   ▼
+                    PostgreSQL          retry topic
+                   (durable state)    backoff ×N, then
+                                          ▼
+                                    dead-letter queue`,
     stack: ["Kafka", "Redis", "PostgreSQL", "Distributed Systems"],
     year: "2026",
     status: "shipped",
@@ -74,8 +112,206 @@ export const projects: Project[] = [
     blurb: "Upload your PDFs. Interrogate them. Get code back.",
     description:
       "GitHub Copilot, but for the docs nobody reads: drop in PDFs and internal wikis, then ask questions, search the architecture, get APIs explained, and generate working code snippets from the answers. Under the hood it's a full retrieval pipeline — vector database, embeddings, a reranking stage to keep the good chunks on top, and an evaluation harness so 'it feels smarter' is backed by actual numbers.",
+    highlights: [
+      "Ingestion pipeline: PDF parsing → semantic chunking → embeddings → vector DB, incremental on re-upload.",
+      "Two-stage retrieval: fast top-k vector search, then a cross-encoder reranker to keep the good chunks on top.",
+      "Generates runnable code snippets from API docs, with the source chunks cited inline.",
+      "Evaluation harness with a golden Q&A set — retrieval and answer quality tracked per release, not per vibe.",
+    ],
+    architecture: `PDFs / wikis ──▶ chunk ──▶ embed ──▶ vector DB
+                                          │
+question ──▶ embed ──▶ top-k ──▶ rerank ──┘
+                                   │
+                                   ▼
+                     LLM: answer · code · citations
+                                   │
+              eval harness ◀── golden Q&A set`,
     stack: ["Python", "Vector DB", "Embeddings", "Reranking", "Evals"],
     year: "2026",
+    status: "shipped",
+  },
+  {
+    id: "workflow-builder",
+    name: "AI Workflow Builder",
+    blurb: "Drag blocks, wire Gmail to Slack to an LLM, hit Run. Like n8n, but mine.",
+    description:
+      "A visual workflow engine: users drag blocks onto a canvas, connect Gmail, Slack, OpenAI and databases into a graph, and click Run. The interesting part is under the canvas — workflows compile to a DAG, the execution engine runs nodes in topological order with per-node retries and state checkpointing, and a scheduler triggers workflows on cron or webhooks.",
+    highlights: [
+      "Workflows compile to an execution DAG — cycles rejected at save time, independent branches run concurrently.",
+      "Per-node retry policy and state checkpointing, so a failed step resumes instead of re-running the whole flow.",
+      "Pluggable connector interface: Gmail, Slack, OpenAI and Postgres blocks share one contract.",
+      "Cron + webhook triggers with an execution history UI for debugging past runs.",
+    ],
+    architecture: `canvas (drag blocks) ──▶ workflow DAG (JSON)
+                              │ validate: no cycles
+                              ▼
+                    execution engine
+             topological run · retries · checkpoints
+                              │
+        ┌──────────┬──────────┼──────────┐
+        ▼          ▼          ▼          ▼
+      Gmail      Slack      OpenAI    Postgres
+                              ▲
+        scheduler: cron · webhooks ──┘`,
+    stack: ["Python", "FastAPI", "React", "PostgreSQL", "Orchestration"],
+    year: "2026",
+    status: "in-progress",
+  },
+  {
+    id: "code-review-bot",
+    name: "AI Code Review Bot",
+    blurb: "A reviewer that reads every PR, never gets tired, and never rubber-stamps.",
+    description:
+      "A GitHub App that wakes up on every pull request: it pulls the diff plus surrounding code for context, runs an LLM review pass and a security-check pass, then leaves inline comments where it found real issues and a summary comment on the PR. Tuned hard against noise — a bot that comments on everything gets muted in a week.",
+    highlights: [
+      "GitHub webhook → diff + context fetch: changed hunks are expanded with the surrounding functions so the LLM sees real code, not fragments.",
+      "Two passes per PR: correctness/readability review and a security scan (injection, secrets, authz mistakes).",
+      "Inline comments anchored to exact diff lines via the GitHub Checks API, plus a TL;DR summary comment.",
+      "Confidence filter drops low-certainty findings — fewer, better comments beats a wall of nitpicks.",
+    ],
+    architecture: `PR opened ──▶ GitHub webhook ──▶ bot service
+                                      │
+                        fetch diff + surrounding code
+                                      │
+                     ┌────────────────┴───────────────┐
+                     ▼                                ▼
+              LLM review pass                 security scan pass
+                     └────────────────┬───────────────┘
+                                      ▼
+                     confidence filter ──▶ inline comments
+                                           + PR summary`,
+    stack: ["Python", "GitHub API", "LLMs", "Static Analysis"],
+    year: "2026",
+    status: "shipped",
+  },
+  {
+    id: "research-assistant",
+    name: "Multi-Agent Research Assistant",
+    blurb: "One question in. A team of agents fans out. One report comes back.",
+    description:
+      "Give it 'research AI startups in healthcare' and a planner agent breaks the question into sub-topics, then a fleet of worker agents divides the work: some search, some read sources, some summarize. A merge step deduplicates findings, resolves conflicts between agents, and assembles a single cited report. The hard part isn't the agents — it's making their output combine into something coherent.",
+    highlights: [
+      "Planner agent decomposes the question into sub-topics and spawns search / read / summarize workers per topic.",
+      "Workers run in parallel with independent context windows — one bad tangent can't poison the rest.",
+      "Merge stage deduplicates findings across agents and flags claims where sources disagree.",
+      "Every claim in the final report links back to the source an agent actually read.",
+    ],
+    architecture: `"research X" ──▶ planner agent
+                        │ splits into sub-topics
+        ┌───────────────┼───────────────┐
+        ▼               ▼               ▼
+   search agents   reader agents   summarizer agents
+        └───────────────┼───────────────┘
+                        ▼
+        merge: dedupe · resolve conflicts
+                        │
+                        ▼
+              final report with citations`,
+    stack: ["Python", "Multi-Agent", "LLMs", "Web Search"],
+    year: "2026",
+    status: "shipped",
+  },
+  {
+    id: "mini-datadog",
+    name: "Mini Datadog",
+    blurb: "Watch your servers so your servers don't surprise you.",
+    description:
+      "A monitoring platform built the way the real ones are: OpenTelemetry agents collect metrics from every host, a collector ships them into Prometheus, alert rules fire on failures and threshold breaches, and Grafana dashboards make it all visible. Built to actually monitor my own projects — dogfooding is the whole point.",
+    highlights: [
+      "OpenTelemetry collectors on each host push CPU, memory, disk and app-level metrics on a scrape interval.",
+      "Prometheus alert rules for the failures that matter: host down, error-rate spikes, disk filling up.",
+      "Grafana dashboards per service, plus one 'is everything on fire?' overview board.",
+      "Alertmanager routes pages to Slack with dedup and silencing, so one incident is one notification.",
+    ],
+    architecture: `servers ──▶ OTel agents ──▶ collector
+                                  │ metrics
+                                  ▼
+                             Prometheus
+                          │             │
+                    alert rules      Grafana
+                          │          dashboards
+                          ▼
+                   Alertmanager ──▶ Slack pages`,
+    stack: ["Prometheus", "OpenTelemetry", "Grafana", "Docker"],
+    year: "2026",
+    status: "shipped",
+  },
+  {
+    id: "uber-dispatch",
+    name: "Uber Dispatch Simulator",
+    blurb: "No frontend. Just the hard part: who picks you up, and what it costs.",
+    description:
+      "A dispatch engine simulator with zero UI and all systems: riders request trips, a geospatial index finds the nearest available drivers, surge pricing reacts to live demand-vs-supply per zone, and route optimization picks assignments that minimize total wait time. Everything is event-driven — requests, matches, pickups and completions all flow through one event log you can replay.",
+    highlights: [
+      "Geospatial hashing (H3-style cells) makes nearest-driver lookup O(neighborhood) instead of O(all drivers).",
+      "Surge multiplier computed per zone from a sliding window of demand vs available supply.",
+      "Matcher optimizes across simultaneous requests — greedy nearest-driver loses to batch assignment, measurably.",
+      "Fully event-sourced: replay any simulation run to debug a weird pricing spike after the fact.",
+    ],
+    architecture: `ride request ──▶ geo index (hex cells)
+                       │ candidate drivers
+                       ▼
+        batch matcher ──▶ assignment
+             │
+        surge engine ◀── demand/supply per zone
+             │
+             ▼
+        pricing ──▶ dispatch event ──▶ event log
+                                      (replayable)`,
+    stack: ["Go", "Geospatial Indexing", "Event Sourcing"],
+    year: "2026",
+    status: "shipped",
+  },
+  {
+    id: "dfs",
+    name: "Distributed File Storage",
+    blurb: "A mini Dropbox: your file, chunked, deduped, and living on three machines.",
+    description:
+      "A distributed storage system that takes a file, splits it into content-addressed chunks, dedupes chunks it has already seen, and replicates each one across three storage nodes. A metadata service tracks which chunks make up which file version and keeps reads consistent while nodes come and go. Losing a node loses nothing.",
+    highlights: [
+      "Content-addressed chunking: chunk ID = hash of contents, so identical data across files is stored exactly once.",
+      "3× replication with rack-aware placement; a background repair loop re-replicates chunks when a node dies.",
+      "Metadata service maps file → chunk list → node locations, with versioned writes for consistency.",
+      "Read path verifies chunk hashes on the way out — silent corruption gets caught, not served.",
+    ],
+    architecture: `file ──▶ chunker ──▶ content hash per chunk
+                     │ seen before? ──▶ dedup, skip upload
+                     ▼
+          storage nodes ×3 (replication)
+                     ▲
+              repair loop (re-replicate on node loss)
+                     │
+             metadata service
+       file → chunks → locations · versions`,
+    stack: ["Go", "Distributed Systems", "Consistent Hashing"],
+    year: "2025",
+    status: "shipped",
+  },
+  {
+    id: "infra-tool",
+    name: "Terraform-style Infrastructure Tool",
+    blurb: "`infra apply` — and your EC2, S3 and IAM exist. `infra apply` again — nothing happens. That's the point.",
+    description:
+      "A Python CLI that does what Terraform does, built to understand why Terraform is hard: declare EC2 instances, S3 buckets and IAM roles in a config file, run `infra apply`, and the tool diffs desired state against what actually exists in AWS, then creates, updates or deletes only what changed. Idempotent by construction — the second apply is a no-op.",
+    highlights: [
+      "State reconciliation: reads live AWS state, diffs against the config, and produces a plan before touching anything.",
+      "`infra plan` shows the diff, `infra apply` executes it — creates, updates and deletes in dependency order.",
+      "Local state file tracks managed resources, so the tool never touches infrastructure it didn't create.",
+      "Failed applies roll back cleanly; partial state is recorded so a re-run converges instead of duplicating.",
+    ],
+    architecture: `infra.yaml ──▶ parser ──▶ desired state
+                                    │
+     AWS APIs ──▶ current state ──▶ diff engine
+                                    │
+                                    ▼
+                        plan: create / update / delete
+                                    │ dependency order
+                                    ▼
+                    apply ──▶ EC2 · S3 · IAM
+                       │
+                  state file (idempotent re-runs)`,
+    stack: ["Python", "AWS", "boto3", "CLI"],
+    year: "2025",
     status: "shipped",
   },
   {
@@ -84,6 +320,18 @@ export const projects: Project[] = [
     blurb: "An agent that reads your whole codebase — not just the file you're in.",
     description:
       "An autonomous repository-intelligence agent that can reason across codebases past 100K lines. A Neo4j knowledge graph maps every file, import and function, and retrieval-augmented pipelines use it to localize bugs, analyze pull requests, and explain how the code actually fits together.",
+    highlights: [
+      "AST parsing builds a Neo4j graph of files, imports, functions and call edges across the whole repo.",
+      "Bug localization walks the graph from a stack trace outward instead of grepping blind.",
+      "Hybrid retrieval: graph traversal for structure, vector search for semantics.",
+    ],
+    architecture: `repo ──▶ AST parse ──▶ Neo4j knowledge graph
+                            (files · imports · calls)
+query ──▶ graph traversal + vector search
+                     │
+                     ▼
+       LLM: bug localization · PR analysis
+            · architecture explanations`,
     stack: ["Python", "Neo4j", "LLMs", "Vector Search"],
     year: "2026",
     status: "in-progress",
@@ -94,48 +342,21 @@ export const projects: Project[] = [
     blurb: "I wanted to know how Kafka really works — so I built one.",
     description:
       "A distributed event-streaming platform written in Go: partitioned logs, replication, and persistent message storage, plus the genuinely hard parts — consumer-group coordination, offset management, leader-based replication, and partition recovery when nodes fall over.",
+    highlights: [
+      "Append-only partitioned log with segment files and index-based lookups, like the real thing.",
+      "Leader-based replication with in-sync replica tracking; partitions fail over when a broker dies.",
+      "Consumer groups with rebalancing and committed offsets — the part that looks easy and isn't.",
+    ],
+    architecture: `producers ──▶ broker (partition leader)
+                        │ append-only log
+                        ▼
+                 replicas (ISR set)
+                        │ failover on broker death
+                        ▼
+                 consumer groups
+           offset commits · rebalancing`,
     stack: ["Go"],
     year: "2025",
-    status: "shipped",
-  },
-  {
-    id: "burek-today",
-    name: "Burek Today",
-    blurb: "A live menu for a family bakery in Croatia that kept selling out.",
-    description:
-      "On a trip to Croatia I kept going back to a tiny bakery — and kept watching people walk out disappointed because the burek was gone. So I built them a simple site: today's menu, what's in stock live, a way for regulars to signal tomorrow's demand, and end-of-day discounts on what's left. Less waste, happier customers.",
-    stack: ["Full-stack", "Live inventory"],
-    year: "2026",
-    status: "shipped",
-  },
-  {
-    id: "lunar-lander",
-    name: "Lunar Lander RL Agent",
-    blurb: "Taught an agent to land on the moon. The simulated one.",
-    description:
-      "A reinforcement-learning deep dive: trained an agent to land a lunar module, which meant getting my hands dirty with RL algorithms, reward shaping and neural networks. It crashed a few hundred times first — watching it finally stick the landing never got old.",
-    stack: ["Python", "Reinforcement Learning"],
-    year: "2025",
-    status: "shipped",
-  },
-  {
-    id: "fraud-detection",
-    name: "Fraud Detection Model",
-    blurb: "Catching bad transactions with boosted trees and neural nets.",
-    description:
-      "Built and compared fraud-detection models — neural networks vs XGBoost vs LightGBM — with proper feature engineering and a hard look at the precision/recall trade-offs that actually matter when false positives annoy real customers.",
-    stack: ["Python", "XGBoost", "LightGBM"],
-    year: "2025",
-    status: "shipped",
-  },
-  {
-    id: "yolo-detection",
-    name: "YOLO Object Detection",
-    blurb: "Boxing pedestrians and storefronts on live street footage.",
-    description:
-      "Explored real-time object detection with YOLO together with a friend — running it over busy street video and watching it pick out people, bikes and shops frame by frame. My gateway drug into computer vision.",
-    stack: ["Python", "YOLO", "OpenCV"],
-    year: "2024",
     status: "shipped",
   },
 ];
