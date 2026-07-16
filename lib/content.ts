@@ -40,9 +40,7 @@ export type Project = {
   name: string;
   blurb: string;
   description: string;
-  // Emoji shown in the list and detail banner
-  icon: string;
-  // Theme hex used to tint the banner + stat tiles
+  // Theme hex used to tint the banner, icon accents + stat tiles
   accent: string;
   // Headline numbers shown as stat tiles
   metrics?: { value: string; label: string }[];
@@ -82,7 +80,6 @@ export const projects: Project[] = [
          │ yes
          ▼
    reply to customer ──▶ log to CRM`,
-    icon: "🤖",
     accent: "#E8A33D",
     metrics: [
       { value: "70%", label: "auto-resolved" },
@@ -115,7 +112,6 @@ export const projects: Project[] = [
                    (durable state)    backoff ×N, then
                                           ▼
                                     dead-letter queue`,
-    icon: "⚡",
     accent: "#02656A",
     metrics: [
       { value: "2M+/day", label: "events" },
@@ -146,7 +142,6 @@ question ──▶ embed ──▶ top-k ──▶ rerank ──┘
                      LLM: answer · code · citations
                                    │
               eval harness ◀── golden Q&A set`,
-    icon: "📚",
     accent: "#9DBFA9",
     metrics: [
       { value: "10K+", label: "chunks indexed" },
@@ -180,7 +175,6 @@ question ──▶ embed ──▶ top-k ──▶ rerank ──┘
       Gmail      Slack      OpenAI    Postgres
                               ▲
         scheduler: cron · webhooks ──┘`,
-    icon: "🧩",
     accent: "#E5928E",
     metrics: [
       { value: "DAG", label: "execution model" },
@@ -214,7 +208,6 @@ question ──▶ embed ──▶ top-k ──▶ rerank ──┘
                                       ▼
                      confidence filter ──▶ inline comments
                                            + PR summary`,
-    icon: "🔍",
     accent: "#E8A33D",
     metrics: [
       { value: "<3min", label: "pr turnaround" },
@@ -248,7 +241,6 @@ question ──▶ embed ──▶ top-k ──▶ rerank ──┘
                         │
                         ▼
               final report with citations`,
-    icon: "🧠",
     accent: "#02656A",
     metrics: [
       { value: "3", label: "agent roles" },
@@ -280,7 +272,6 @@ question ──▶ embed ──▶ top-k ──▶ rerank ──┘
                           │          dashboards
                           ▼
                    Alertmanager ──▶ Slack pages`,
-    icon: "📈",
     accent: "#9DBFA9",
     metrics: [
       { value: "15s", label: "scrape interval" },
@@ -313,7 +304,6 @@ question ──▶ embed ──▶ top-k ──▶ rerank ──┘
              ▼
         pricing ──▶ dispatch event ──▶ event log
                                       (replayable)`,
-    icon: "🚕",
     accent: "#E5928E",
     metrics: [
       { value: "-23%", label: "wait vs greedy" },
@@ -345,7 +335,6 @@ question ──▶ embed ──▶ top-k ──▶ rerank ──┘
                      │
              metadata service
        file → chunks → locations · versions`,
-    icon: "💾",
     accent: "#E8A33D",
     metrics: [
       { value: "3×", label: "replication" },
@@ -379,7 +368,6 @@ question ──▶ embed ──▶ top-k ──▶ rerank ──┘
                     apply ──▶ EC2 · S3 · IAM
                        │
                   state file (idempotent re-runs)`,
-    icon: "🏗️",
     accent: "#02656A",
     metrics: [
       { value: "no-op", label: "second apply" },
@@ -408,7 +396,6 @@ query ──▶ graph traversal + vector search
                      ▼
        LLM: bug localization · PR analysis
             · architecture explanations`,
-    icon: "🕸️",
     accent: "#9DBFA9",
     metrics: [
       { value: "100K+", label: "loc reasoned over" },
@@ -438,7 +425,6 @@ query ──▶ graph traversal + vector search
                         ▼
                  consumer groups
            offset commits · rebalancing`,
-    icon: "📨",
     accent: "#E5928E",
     metrics: [
       { value: "ISR", label: "replication" },

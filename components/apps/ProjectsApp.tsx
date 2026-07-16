@@ -11,6 +11,203 @@ const statusStyle: Record<Project["status"], string> = {
   archived: "bg-creamDim text-inkSoft border-ink/20",
 };
 
+// 12×12 1-bit pixel icons, System-7 style. "#" = ink, "o" = project accent.
+const PIXEL_ICONS: Record<string, string[]> = {
+  "support-agent": [
+    "............",
+    ".....##.....",
+    ".....##.....",
+    "..########..",
+    "..#......#..",
+    "..#.o..o.#..",
+    "..#......#..",
+    "..#.####.#..",
+    "..########..",
+    "...#....#...",
+    "..##....##..",
+    "............",
+  ],
+  "event-platform": [
+    "............",
+    ".......###..",
+    "......###...",
+    ".....###....",
+    "....####....",
+    "...######...",
+    "......###...",
+    ".....###....",
+    "....###.....",
+    "...###......",
+    "...##.......",
+    "............",
+  ],
+  "docs-copilot": [
+    "............",
+    "..########..",
+    "..#....o.#..",
+    "..#....o.#..",
+    "..#....o.#..",
+    "..#......#..",
+    "..#.###..#..",
+    "..#.####.#..",
+    "..#......#..",
+    "..########..",
+    "............",
+    "............",
+  ],
+  "workflow-builder": [
+    "............",
+    "..###.......",
+    "..#o#.......",
+    "..###.......",
+    "....#.......",
+    "....#####...",
+    "........#...",
+    ".......###..",
+    ".......#o#..",
+    ".......###..",
+    "............",
+    "............",
+  ],
+  "code-review-bot": [
+    "............",
+    "...####.....",
+    "..#....#....",
+    "..#....#....",
+    "..#....#....",
+    "..#....#....",
+    "...####.....",
+    "......##....",
+    ".......##...",
+    "........##..",
+    "............",
+    "............",
+  ],
+  "research-assistant": [
+    "............",
+    ".....##.....",
+    ".....##.....",
+    "....#..#....",
+    "...#.##.#...",
+    "..#..##..#..",
+    ".##..##..##.",
+    ".##..##..##.",
+    "............",
+    "............",
+    "............",
+    "............",
+  ],
+  "mini-datadog": [
+    "............",
+    "............",
+    "......oo....",
+    "......oo....",
+    "..##..oo....",
+    "..##..oo.##.",
+    "..##..oo.##.",
+    "..##..oo.##.",
+    ".##########.",
+    "............",
+    "............",
+    "............",
+  ],
+  "uber-dispatch": [
+    "............",
+    "............",
+    "............",
+    "....####....",
+    "...#....#...",
+    "..########..",
+    "..#######o..",
+    "...##..##...",
+    "............",
+    "............",
+    "............",
+    "............",
+  ],
+  dfs: [
+    "............",
+    "..########..",
+    "..#.....o#..",
+    "..########..",
+    "..#.....o#..",
+    "..########..",
+    "..#.....o#..",
+    "..########..",
+    "............",
+    "............",
+    "............",
+    "............",
+  ],
+  "infra-tool": [
+    "............",
+    "..########..",
+    "..#......#..",
+    "..#o.....#..",
+    "..#.o....#..",
+    "..#o.....#..",
+    "..#...ooo#..",
+    "..#......#..",
+    "..########..",
+    "............",
+    "............",
+    "............",
+  ],
+  "ai-coding-agent": [
+    "............",
+    "............",
+    "....#..#....",
+    "...#...o#...",
+    "..#...o..#..",
+    "..#..o...#..",
+    "...#o...#...",
+    "....#..#....",
+    "............",
+    "............",
+    "............",
+    "............",
+  ],
+  "kafka-clone": [
+    "............",
+    "............",
+    "..########..",
+    "..##....##..",
+    "..#.#..#.#..",
+    "..#..##..#..",
+    "..#......#..",
+    "..########..",
+    "............",
+    "............",
+    "............",
+    "............",
+  ],
+};
+
+const INK = "#2A2721";
+
+function PixelIcon({ id, accent, size }: { id: string; accent: string; size: number }) {
+  const map = PIXEL_ICONS[id];
+  if (!map) return null;
+  return (
+    <svg
+      viewBox="0 0 12 12"
+      width={size}
+      height={size}
+      shapeRendering="crispEdges"
+      aria-hidden
+      className="shrink-0"
+    >
+      {map.flatMap((row, y) =>
+        [...row].map((c, x) =>
+          c === "." ? null : (
+            <rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} fill={c === "o" ? accent : INK} />
+          )
+        )
+      )}
+    </svg>
+  );
+}
+
 export default function ProjectsApp() {
   const [selected, setSelected] = useState<Project | null>(null);
 
@@ -30,8 +227,8 @@ export default function ProjectsApp() {
             }`}
           >
             <div className="mb-1 flex items-center justify-between gap-2">
-              <span className="font-pixel text-[11px] text-ink">
-                <span className="mr-1.5">{p.icon}</span>
+              <span className="flex items-center gap-1.5 font-pixel text-[11px] text-ink">
+                <PixelIcon id={p.id} accent={p.accent} size={14} />
                 {p.name}
               </span>
               <span className="font-mono text-[10px] text-inkSoft">{p.year}</span>
@@ -59,15 +256,13 @@ export default function ProjectsApp() {
               ← back
             </button>
             <div
-              className="mb-4 flex items-center justify-center rounded-lg border-2 border-ink/15 py-7"
+              className="mb-4 flex items-center justify-center rounded-lg border-2 border-ink/15 py-6 shadow-[inset_0_2px_0_rgba(42,39,33,0.06)]"
               style={{
-                backgroundColor: `${selected.accent}2E`,
-                backgroundImage: `repeating-linear-gradient(0deg, ${selected.accent}26 0 2px, transparent 2px 10px), repeating-linear-gradient(90deg, ${selected.accent}26 0 2px, transparent 2px 10px)`,
+                backgroundColor: `${selected.accent}24`,
+                backgroundImage: `repeating-linear-gradient(0deg, ${selected.accent}1F 0 2px, transparent 2px 10px), repeating-linear-gradient(90deg, ${selected.accent}1F 0 2px, transparent 2px 10px)`,
               }}
             >
-              <span className="text-5xl drop-shadow-[3px_3px_0_rgba(42,39,33,0.25)]">
-                {selected.icon}
-              </span>
+              <PixelIcon id={selected.id} accent={selected.accent} size={60} />
             </div>
             <div className="mb-2 flex flex-wrap items-center gap-2">
               <h2 className="font-pixel text-sm text-ink">{selected.name}</h2>
@@ -83,8 +278,7 @@ export default function ProjectsApp() {
                 {selected.metrics.map((m) => (
                   <div
                     key={m.label}
-                    className="rounded-lg border-2 border-ink/15 bg-cream p-2 text-center"
-                    style={{ borderBottomColor: selected.accent, borderBottomWidth: 3 }}
+                    className="rounded-lg border-2 border-ink/15 bg-creamDim p-2 text-center shadow-[inset_2px_2px_0_rgba(42,39,33,0.07)]"
                   >
                     <div className="font-pixel text-[11px] leading-tight text-ink">{m.value}</div>
                     <div className="mt-1 font-mono text-[9px] uppercase leading-tight text-inkSoft">
