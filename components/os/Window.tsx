@@ -104,7 +104,7 @@ export default function Window({
       onPointerDown={onFocus}
       style={
         isMobile
-          ? { zIndex: state.z, left: 8, right: 8, top: 8, bottom: 64, position: "absolute" }
+          ? { zIndex: state.z, left: 8, right: 8, top: 8, bottom: "calc(64px + env(safe-area-inset-bottom))", position: "absolute" }
           : {
               zIndex: state.z,
               left: state.x,

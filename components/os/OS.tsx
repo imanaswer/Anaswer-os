@@ -77,6 +77,8 @@ export default function OS() {
   const [toasts, setToasts] = useState<{ id: string; label: string }[]>([]);
   const [achCount, setAchCount] = useState(0);
   const [switcher, setSwitcher] = useState<AppId | null>(null);
+  // ponytail: portrait.png is ~1MB — don't render (= download) it on phones where it's hidden anyway
+  const [wideScreen, setWideScreen] = useState(false);
   const zCounter = useRef(saved.current?.z ?? 10);
   const konamiIdx = useRef(0);
   const desktopRef = useRef<HTMLDivElement>(null);
@@ -109,6 +111,14 @@ export default function OS() {
       const y = Math.max(8, Math.min(80 + offset, vh - def.h - 60));
       return [...wins, { appId, x, y, minimized: false, z: zCounter.current, ox: origin?.x, oy: origin?.y }];
     });
+  }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 640px)");
+    const update = () => setWideScreen(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
   }, []);
 
   // boot skip + deep links (?open=projects)
@@ -293,7 +303,7 @@ export default function OS() {
       }}
     >
       {/* portrait hero — blends into the wallpaper (same bg color as the art) */}
-      {!secretUnlocked && (
+      {!secretUnlocked && wideScreen && (
         <motion.div
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
@@ -372,7 +382,7 @@ export default function OS() {
       </motion.div>
 
       {/* compact mobile intro */}
-      <div className="pointer-events-none absolute bottom-16 left-4 z-[2] max-w-[280px] select-none md:hidden">
+      <div className="pointer-events-none absolute bottom-[calc(4rem+env(safe-area-inset-bottom))] left-4 z-[2] max-w-[280px] select-none md:hidden">
         <p className="font-pixel text-[10px] uppercase leading-[2] text-cream [text-shadow:2px_2px_0_rgba(0,20,22,0.4)]">
           Hey, I&apos;m <span className="text-amber">{profile.name}</span> —{" "}
           {profile.role}. Tap an icon to look around!
@@ -462,7 +472,7 @@ export default function OS() {
       </AnimatePresence>
 
       {/* achievement toasts */}
-      <div className="pointer-events-none absolute bottom-16 right-4 z-[9300] flex flex-col gap-2">
+      <div className="pointer-events-none absolute bottom-[calc(4rem+env(safe-area-inset-bottom))] right-4 z-[9300] flex flex-col gap-2">
         <AnimatePresence>
           {toasts.map((t) => (
             <motion.div

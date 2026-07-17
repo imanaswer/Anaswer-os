@@ -72,7 +72,7 @@ export default function Taskbar({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.97 }}
               transition={{ type: "spring", stiffness: 380, damping: 30 }}
-              className="fixed bottom-14 left-2 z-[8950] w-60 overflow-hidden rounded-xl border-2 border-ink/70 bg-cream shadow-window"
+              className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] left-2 z-[8950] w-60 overflow-hidden rounded-xl border-2 border-ink/70 bg-cream shadow-window"
               role="menu"
               aria-label="Start menu"
             >
@@ -161,7 +161,7 @@ export default function Taskbar({
         )}
       </AnimatePresence>
 
-      <div className="absolute bottom-0 left-0 right-0 z-[9000] flex h-12 items-center gap-2 border-t-2 border-ink/70 bg-cream px-2 shadow-taskbar">
+      <div className="absolute bottom-0 left-0 right-0 z-[9000] flex h-[calc(3rem+env(safe-area-inset-bottom))] items-center gap-2 border-t-2 border-ink/70 bg-cream px-2 pb-[env(safe-area-inset-bottom)] shadow-taskbar">
         {/* start button */}
         <button
           onClick={() => {

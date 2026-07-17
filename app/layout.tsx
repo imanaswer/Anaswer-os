@@ -43,6 +43,9 @@ export const metadata: Metadata = {
 
 export const viewport = {
   themeColor: "#02656A",
+  // ponytail: maximumScale 1 stops iOS auto-zoom on <16px inputs (terminal); pinch-zoom still works since iOS 10
+  maximumScale: 1,
+  viewportFit: "cover" as const,
 };
 
 export default function RootLayout({
